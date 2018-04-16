@@ -196,10 +196,32 @@ void Database::LoadData(const std::string &data_folder_path,
 
 void Database::BuildMemberGraph() {
   // Fill in your code here
+  
+  for(Group *g : groups){
+    unsigned int g_size;
+    g_size=g->members.size();//get size of group
+    // ArrayList<Member*> Graph;
+    MemberConnection conn;
+    conn.group = g;
+    //iterate through group add add others to connecting_members
+    for(unsigned int i=0;i<g_size;i++){
+      for(unsigned int j=0;j<g_size;j++){
+        //g->members[i]->connecting_members.insert({g->members[i+1]->member_id,(MemberConnection(g,g->members[i+1]))});
+        //g->members[i]->connecting_members.insert(std::make_pair<uint64_t, MemberConnection>(g->members[j]->member_id,MemberConnection(g,g->members[j])));
+        if(j!=i){
+        g->members[i]->connecting_members[g->members[j]->member_id] = conn;
+        }
+        //adds edge to adj list
+        // Graph[g->members[i]].push_back(g->members[j]);
+        // Graph[g->members[j]].push_back(g->members[i]);
+      }
+    }
+  }
 }
 
 double Database::BestGroupsToJoin(Member *root) {
   // Fill in your code here
+  return 1;
 }
 
 }
