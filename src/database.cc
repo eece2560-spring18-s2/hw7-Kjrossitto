@@ -202,13 +202,14 @@ void Database::BuildMemberGraph() {
     g_size=g->members.size();//get size of group
     // ArrayList<Member*> Graph;
     MemberConnection conn;
-    conn.group = g;
     //iterate through group add add others to connecting_members
     for(unsigned int i=0;i<g_size;i++){
       for(unsigned int j=0;j<g_size;j++){
         //g->members[i]->connecting_members.insert({g->members[i+1]->member_id,(MemberConnection(g,g->members[i+1]))});
         //g->members[i]->connecting_members.insert(std::make_pair<uint64_t, MemberConnection>(g->members[j]->member_id,MemberConnection(g,g->members[j])));
         if(j!=i){
+        conn.group = g;
+        conn.dst=g->members[j];
         g->members[i]->connecting_members[g->members[j]->member_id] = conn;
         }
         //adds edge to adj list
@@ -221,7 +222,32 @@ void Database::BuildMemberGraph() {
 
 double Database::BestGroupsToJoin(Member *root) {
   // Fill in your code here
-  return 1;
+  std::priority_queue<Member*> Q;
+  Member* u;
+  Member* v;
+  double total_weight =0;
+  root->key =0;
+  
+  for(Member* m : members){
+    m->key = 99999;
+    m->parent =NULL;
+    Q.push(m);
+  }
+  
+  while(!Q.empty()){
+    u=Q.top();
+    Q.pop();
+    u->color= COLOR_BLACK;
+    for ( auto it = u->connecting_members.begin(); it != u->connecting_members.end(); it++ ){
+      v=it->second.dst;
+      if((v->color != COLOR_BLACK) && (it->second.GetWeight() < v->key)){
+        v->parent = u;
+        v->key = it->second.GetWeight();
+        total_weight= total_weight+ v->key-1;
+      }
+    }
+  }
+  
+  return total_weight;
 }
-
 }
